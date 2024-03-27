@@ -51,23 +51,22 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                         break
                     else:
                         print("Illegal move, try again.")
-                print(board)
             else: # Autobattle with chosen heuristic until game over
                 print("Generating your next move...")
                 move = f2(board, h2, depth_limit, board.turn)[0]
                 print('Your side chose', move.uci())
-                print(board)
             uci_move = chess.Move.from_uci(str(move))
             board.push(uci_move)
+            print(board)
             num_of_moves += 1
             print("Number of Moves:", num_of_moves)
         else: # Bot's turn
             print("Generating opponent's next move...")
             agents_move = f(board, h, depth_limit, board.turn)[0]
             print(f"Opponent chose: {agents_move.uci()}")
-            print(board)
             # print("Opponent's cur pos rating", h(board, not side))
             board.push(agents_move)
+            print(board)
 
 ####################################
 ########## Misc Functions ##########
@@ -96,7 +95,7 @@ if __name__ == "__main__":
 
     # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move)
 
-    play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move)
+    play_game("Black", f.minimax, h.grants_heuristic, 4, True, f.random_legal_move)
     '''
     board = chess.Board()
     for i in range(20):

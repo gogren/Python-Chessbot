@@ -3,6 +3,7 @@ import random
 
 # Ok at taking pieces, bad at seeing threats
 # Fairly shit, beats random_legal_move consisantly tho so that's cool
+# Wait hold on it's not that bad
 def grants_heuristic(board: chess.Board, side):
     """
     Scoring:
@@ -18,12 +19,11 @@ def grants_heuristic(board: chess.Board, side):
 
     Else if its not being attacked, check if its attacking a higer value peice
 
-    Other helpdul methods:
-    piece_at(square) / piece_type_at()
-    color_at()
-    Or look in core / Board or pieces for more
+    look in core / Board or pieces for more useful methods
 
     Add + 1000 somethings if state is checkmate in your favor or - 1000 if checkmate in oppoenents favor
+
+    Compare your material to opponent's material, if difference is greater than one, subtract one, so you don't always take pawns
     """
     if board.is_game_over():
         # if board.is_checkmate():
@@ -34,20 +34,31 @@ def grants_heuristic(board: chess.Board, side):
                 return -1000
     # Larger total is better
     total = 0
+    opposing_total = 0
+    total_piece_value = 0
     values = [1, 3, 3, 5, 9, 0]
     for i in range(1,6):
         # Gets all the square for all the peices types of a given color
         squares = board.pieces(chess.PieceType(i), chess.Color(side))
+        opponent_squares = board.pieces(chess.PieceType(i), chess.Color(not side))
         if i == 1:
             total += len(squares) # Count pawns
+            opposing_total += len(opponent_squares)
+            total_piece_value += len(squares)
         elif i == 2 or i == 3:
             total += len(squares) * 3 # Count bishops / knights
+            total_piece_value += len(squares) * 3
+            opposing_total += len(opponent_squares) * 3
         elif i == 4:
             total += len(squares) * 5 # Count Rooks
+            total_piece_value += len(squares) * 5
+            opposing_total += len(opponent_squares) * 5
         elif i == 5:
             total += len(squares) * 9 # Count queens
+            total_piece_value += len(squares) * 9
+            opposing_total += len(opponent_squares) * 9
         # Don't need to count king
-            
+
         # Check if any opposing peices attack a square, if so
             # Subtract the largerst differences of the values of the peices
             # from the total
@@ -82,5 +93,10 @@ def grants_heuristic(board: chess.Board, side):
                             compare = tot_defender_val - tot_attacker_val
                             if compare > 0:
                                 total -= compare
-                # Check what you're currently attacking 
+    piece_comparison = total_piece_value - opposing_total
+    if (piece_comparison >= 1):
+        total += piece_comparison - 1
+    # print(total_piece_value, opposing_total)
+                # TODO Check what you're currently attacking 
+        
     return total
