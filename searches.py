@@ -3,7 +3,7 @@ import random
 # Format(can change): 
 # func(board, heuristic) 
 
-def random_legal_move(board: chess.Board, h, depth_limit):
+def random_legal_move(board: chess.Board, h, depth_limit, search_color):
     # No heuristic needed
     totMoves = []
     for move in board.legal_moves:

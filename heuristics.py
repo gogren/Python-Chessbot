@@ -2,6 +2,7 @@ import chess
 import random 
 
 # Ok at taking pieces, bad at seeing threats
+# Fairly shit, beats random_legal_move consisantly tho so that's cool
 def grants_heuristic(board: chess.Board, side):
     """
     Scoring:
