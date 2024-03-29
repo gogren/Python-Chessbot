@@ -13,6 +13,7 @@ h2: ^^, heuristic your autobattler will use
 """
 def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None):
     board = chess.Board()
+    print(board)
     if color in "BlackblackFalsefalse":
         print("Chose Black")
         side = False
@@ -60,7 +61,7 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                 move_pair = f2(board, h2, depth_limit, board.turn)
                 move = move_pair[0]
                 print('Your side chose', move.uci())
-                print("Move Score:", move_pair[1])
+                print("Your Position Score:", move_pair[1])
             uci_move = chess.Move.from_uci(str(move))
             board.push(uci_move)
             print(board)
@@ -71,7 +72,7 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
             agents_move_pair = f(board, h, depth_limit, board.turn)
             agents_move = agents_move_pair[0]
             print(f"Opponent chose: {agents_move.uci()}")
-            print("Opponent's Move Score:", agents_move_pair[1])
+            print("Opponent's Position Score:", agents_move_pair[1])
             # print("Opponent's cur pos rating", h(board, not side))
             board.push(agents_move)
             print(board)
@@ -104,4 +105,4 @@ if __name__ == "__main__":
     # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move, Nothing or anything)
 
     # In this game below, white is using the abminimax with the heurisitic against random moves. White is the capital letters.
-    play_game("Black", f.abminimax, h.grants_heuristic, 4, True, f.random_legal_move)
+    play_game("White", f.abminimax, h.grants_heuristic, 4)

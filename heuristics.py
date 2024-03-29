@@ -26,7 +26,7 @@ def grants_heuristic(board: chess.Board, side):
     Compare your material to opponent's material, if difference is greater than one, subtract one, so you don't always take pawns DONE
 
     REWARD DEVELOPMENT:
-    Maybe if move count is over a bit add some decimal value to total to encourage not just promoting pawns. 
+    Maybe if move count is between some values, and the peices_comparrison isn't that big, add some decimal value to total to encourage not just promoting pawns. 
     """
     if board.is_game_over():
         # if board.is_checkmate():

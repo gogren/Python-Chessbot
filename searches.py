@@ -12,27 +12,39 @@ def random_legal_move(board: chess.Board, h, depth_limit, search_color):
     chosen_move = chess.Move.from_uci(str(rand_move))
     return (chosen_move, 0)
 
-def minimax(board: chess.Board, h, depth_limit, search_color, last_move = None):
+def minimax(board: chess.Board, h, depth_limit, search_color):
+     if depth_limit == 0 or board.is_game_over():
+          print("Bad depth limit / Game is over")
+          return None
+     legal_moves = board.legal_moves     
+     max_eval = ["", -math.inf]
+     for move in legal_moves:
+        # Maximize here
+        board.push(chess.Move.from_uci(str(move)))
+        eval = minimax_help(board, h, depth_limit - 1, search_color)            
+        board.pop()
+        max_eval = find_max_pair([max_eval, [chess.Move.from_uci(str(move)), eval]])
+     return max_eval
+
+def minimax_help(board: chess.Board, h, depth_limit, search_color):
     if depth_limit == 0 or board.is_game_over():
-        return [chess.Move.from_uci(str(last_move)), h(board, search_color)]
+        return h(board, search_color)
     legal_moves = board.legal_moves 
     if board.turn == search_color: # Find best move for color
-            max_eval = ["", -100000]
+            max_eval = -math.inf
             for move in legal_moves:
                 board.push(chess.Move.from_uci(str(move)))
-                eval = minimax(board, h, depth_limit - 1, search_color, move)                
+                eval = minimax_help(board, h, depth_limit - 1, search_color)                
                 board.pop()
-                eval[0] = chess.Move.from_uci(str(move))
-                max_eval = find_max_pair([max_eval, eval])        
+                max_eval = max(max_eval, eval)        
             return max_eval
     else: # Find worst move for color
-            min_eval = ["", 100000]
+            min_eval = math.inf
             for move in legal_moves:
                 board.push(chess.Move.from_uci(str(move)))
-                eval = minimax(board, h, depth_limit - 1, search_color, move)                
+                eval = minimax_help(board, h, depth_limit - 1, search_color)                
                 board.pop()
-                eval[0] = chess.Move.from_uci(str(move))
-                min_eval = find_min_pair([min_eval, eval])
+                min_eval = min(min_eval, eval)
             return min_eval
     
     
@@ -45,15 +57,13 @@ def abminimax(board: chess.Board, h, depth_limit, search_color):
      for move in legal_moves:
         # Maximize here
         board.push(chess.Move.from_uci(str(move)))
-        eval = abminimax_help(board, h, depth_limit - 1, search_color, move, -math.inf, math.inf)            
+        eval = abminimax_help(board, h, depth_limit - 1, search_color, -math.inf, math.inf)            
         board.pop()
-        move_uci = chess.Move.from_uci(str(move))
         max_eval = find_max_pair([max_eval, [chess.Move.from_uci(str(move)), eval]])
-     print(max_eval)
      return max_eval
 
 # Might do this with regular minimax too
-def abminimax_help(board: chess.Board, h, depth_limit, search_color, last_move, alpha, beta):
+def abminimax_help(board: chess.Board, h, depth_limit, search_color, alpha, beta):
     if depth_limit == 0 or board.is_game_over():
         return h(board, search_color)
     legal_moves = board.legal_moves 
@@ -61,7 +71,7 @@ def abminimax_help(board: chess.Board, h, depth_limit, search_color, last_move, 
             max_eval = -math.inf
             for move in legal_moves:
                 board.push(chess.Move.from_uci(str(move)))
-                eval = abminimax_help(board, h, depth_limit - 1, search_color, last_move, alpha, beta)
+                eval = abminimax_help(board, h, depth_limit - 1, search_color, alpha, beta)
                 board.pop()
                 max_eval = max(max_eval, eval)
                 alpha = max(alpha, eval)
@@ -72,7 +82,7 @@ def abminimax_help(board: chess.Board, h, depth_limit, search_color, last_move, 
             min_eval = math.inf
             for move in legal_moves:
                 board.push(chess.Move.from_uci(str(move)))
-                eval = abminimax_help(board, h, depth_limit - 1, search_color, last_move, alpha, beta)
+                eval = abminimax_help(board, h, depth_limit - 1, search_color, alpha, beta)
                 board.pop()
                 min_eval = min(min_eval, eval)
                 beta = min(beta, eval)
