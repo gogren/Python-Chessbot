@@ -203,3 +203,4 @@ def minimax(pos, depth, alpha, beta, maximizingPlayer) :
             if beta <= alpha :
                 break
         return maxEval
+    

@@ -1,8 +1,11 @@
 import random
+import pygame
 import chess
 import heuristics as h
 import searches as f
+import shit as s
 
+pygame.init()
 """
 color: "Black" or "White"
 f: search function opponent will use
@@ -30,6 +33,7 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
     if autobattle and h2 == None:
         h2 = h
     while True:
+        s.show(board.board_fen(), board)
         # Checks for checkmate, stalemate, insuffecient material, 75 move rule, and five-fold repition 
         if board.is_game_over():
             print("Game Over")
@@ -106,3 +110,5 @@ if __name__ == "__main__":
 
     # In this game below, white is using the abminimax with the heurisitic against random moves. White is the capital letters.
     play_game("White", f.abminimax, h.grants_heuristic, 4)
+
+
