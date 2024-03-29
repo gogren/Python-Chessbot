@@ -12,18 +12,21 @@ def grants_heuristic(board: chess.Board, side):
     Add up all peices for white minus black peices and add to score DONE
     Check if being attacked if so is_attacked_by(chess.Color, chess.Square), then find attackers using attackers DONE
 
-    If difference is zero but there is an attacker, check for a defender
+    If difference is zero but there is an attacker, check for a defender DONE
 
     Check if defended, using is_attacked_by(), then evaulate defenders using attackers(chess.Color, chess.Square)
-    Then Evaluate the value of the peice, its defenders adn attackers to come up with some value using and subtract from score
+    Then Evaluate the value of the peice, its defenders adn attackers to come up with some value using and subtract from score DONE
 
-    Else if its not being attacked, check if its attacking a higer value peice
+    Else if its not being attacked, check if its attacking a higer value peice DONE?
 
     look in core / Board or pieces for more useful methods
 
-    Add + 1000 somethings if state is checkmate in your favor or - 1000 if checkmate in oppoenents favor
+    Add + 1000 somethings if state is checkmate in your favor or - 1000 if checkmate in oppoenents favor DONE
 
-    Compare your material to opponent's material, if difference is greater than one, subtract one, so you don't always take pawns
+    Compare your material to opponent's material, if difference is greater than one, subtract one, so you don't always take pawns DONE
+
+    REWARD DEVELOPMENT:
+    Maybe if move count is over a bit add some decimal value to total to encourage not just promoting pawns. 
     """
     if board.is_game_over():
         # if board.is_checkmate():
@@ -100,3 +103,6 @@ def grants_heuristic(board: chess.Board, side):
                 # TODO Check what you're currently attacking 
         
     return total
+
+
+# Could make some mid heuristics for science

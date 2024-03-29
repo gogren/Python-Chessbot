@@ -16,9 +16,13 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
     if color in "BlackblackFalsefalse":
         print("Chose Black")
         side = False
+        opponent = "White"
+        you = "Black"
     else:
         print("Chose White")
         side = True
+        opponent = "Black"
+        you = "White"
     num_of_moves = 0
     if autobattle and f2 == None:
         f2 = f
@@ -52,18 +56,22 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                     else:
                         print("Illegal move, try again.")
             else: # Autobattle with chosen heuristic until game over
-                print("Generating your next move...")
-                move = f2(board, h2, depth_limit, board.turn)[0]
+                print(f"Generating {you}'s next move...")
+                move_pair = f2(board, h2, depth_limit, board.turn)
+                move = move_pair[0]
                 print('Your side chose', move.uci())
+                print("Move Score:", move_pair[1])
             uci_move = chess.Move.from_uci(str(move))
             board.push(uci_move)
             print(board)
             num_of_moves += 1
             print("Number of Moves:", num_of_moves)
         else: # Bot's turn
-            print("Generating opponent's next move...")
-            agents_move = f(board, h, depth_limit, board.turn)[0]
+            print(f"Generating {opponent}'s next move...")
+            agents_move_pair = f(board, h, depth_limit, board.turn)
+            agents_move = agents_move_pair[0]
             print(f"Opponent chose: {agents_move.uci()}")
+            print("Opponent's Move Score:", agents_move_pair[1])
             # print("Opponent's cur pos rating", h(board, not side))
             board.push(agents_move)
             print(board)
@@ -93,17 +101,7 @@ if __name__ == "__main__":
     # for generating its move using a depth of 3 in its searches, autobattle is set to true, so no user input for user's color
     # Optionally, f.random_legal_move is used here for the user's side's search, also a heuristic can also be added for user searching. 
 
-    # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move)
+    # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move, Nothing or anything)
 
-    play_game("Black", f.minimax, h.grants_heuristic, 4, True, f.random_legal_move)
-    '''
-    board = chess.Board()
-    for i in range(20):
-        board.push(random_legal_move(board, 1,1))
-    print(minimax(board,grants_heuristic,3, board.turn))
-    print(board)
-    moves = []
-    for move in board.legal_moves:
-        moves.append(move.uci())
-    print(moves)
-    '''
+    # In this game below, white is using the abminimax with the heurisitic against random moves. White is the capital letters.
+    play_game("Black", f.abminimax, h.grants_heuristic, 4, True, f.random_legal_move)
