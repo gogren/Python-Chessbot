@@ -3,7 +3,7 @@ import pygame
 import chess
 import heuristics as h
 import searches as f
-import shit as s
+import gui as g
 
 pygame.init()
 """
@@ -33,7 +33,7 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
     if autobattle and h2 == None:
         h2 = h
     while True:
-        s.show(board.board_fen(), board)
+        g.show(board.board_fen(), board)
         # Checks for checkmate, stalemate, insuffecient material, 75 move rule, and five-fold repition 
         if board.is_game_over():
             print("Game Over")
@@ -44,6 +44,10 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                 print("Black Wins")
             elif board.outcome().winner == True:
                 print("White Wins")
+            while True:
+                end = input('Enter "end" to be done:')
+                if end == "end":
+                    break
             break
         if board.turn == side: # Your turn
             if not autobattle:
@@ -54,8 +58,29 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                 for move in board.legal_moves:
                     l_moves.append(move.uci())
                 print(f"Legal Moves:\n {l_moves}")
+                # Could do clicking stuff with gui here
                 while True:
-                    move = input("Enter Move: ")
+                    move = ""
+                    first_move = True
+                    second_move = True
+                    # Get first click
+                    while first_move:
+                        event_list = pygame.event.get()
+                        for event in event_list:
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                move += g.get_square(event.pos)
+                                first_move = False
+                                print(move)
+                    # Get second click
+                    while second_move:
+                        event_list = pygame.event.get()
+                        for event in event_list:
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                move += g.get_square(event.pos)
+                                # print(square)
+                                second_move = False   
+                    print(move)
+                    # Check if move is valid
                     if move in l_moves:
                         break
                     else:
@@ -70,7 +95,7 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
             board.push(uci_move)
             print(board)
             num_of_moves += 1
-            print("Number of Moves:", num_of_moves)
+            print("Number of Moves:")
         else: # Bot's turn
             print(f"Generating {opponent}'s next move...")
             agents_move_pair = f(board, h, depth_limit, board.turn)
@@ -107,8 +132,8 @@ if __name__ == "__main__":
     # Optionally, f.random_legal_move is used here for the user's side's search, also a heuristic can also be added for user searching. 
 
     # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move, Nothing or anything)
-
-    # In this game below, white is using the abminimax with the heurisitic against random moves. White is the capital letters.
+    
+    # Having a depth of 5 goes kinda hard but it takes mad long
     play_game("White", f.abminimax, h.grants_heuristic, 4)
 
 

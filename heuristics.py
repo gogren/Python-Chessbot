@@ -24,6 +24,10 @@ def grants_heuristic(board: chess.Board, side):
     Add + 1000 somethings if state is checkmate in your favor or - 1000 if checkmate in oppoenents favor DONE
 
     Compare your material to opponent's material, if difference is greater than one, subtract one, so you don't always take pawns DONE
+TODO
+    FLAW ex: if a pawn attacks a knight but that knight has a pawns and a queen defending it doesn't care to move it
+    
+    FLAW: Check if a defender is pinned, there's a function for that, if so don't count it DONE
 
     REWARD DEVELOPMENT:
     Maybe if move count is between some values, and the peices_comparrison isn't that big, add some decimal value to total to encourage not just promoting pawns. 
@@ -76,31 +80,43 @@ def grants_heuristic(board: chess.Board, side):
                     difference = values[i - 1] - attacker_value
                     if (difference > largest_difference):
                         largest_difference = difference
-                total -= largest_difference
+                if largest_difference > 0:
+                    # Add +2 penalty to having a piece being attacked by a piece of lower value
+                    total -= (largest_difference + 2)
                 # If there is at least one attacker but difference is 0, check for defenders, if less defenders than attackers, subtract values
                 # Also should check values of defenders
                 if (largest_difference == 0):
                     # Thankfully pieces don't attack their own squares
                     defender_squares = board.attackers(side, square)
                     if (len(defender_squares) < len(attackers_squares)):
-                        if (len(defender_squares) == 0): # Piece is hanging
-                            total -= values[board.piece_type_at(square) - 1]
+                        if (len(defender_squares) == 0): # Piece is hanging, add aditional penalty
+                            total -= values[board.piece_type_at(square) - 1] + 1
                         else:
                             tot_attacker_val = 0
                             tot_defender_val = 0
                             # Get total values of each defender and attackers, subtract difference from total
                             for attacker in attackers_squares:
-                                tot_attacker_val += values[board.piece_type_at(attacker) - 1]
+                                if not board.is_pinned(not side, attacker):
+                                    tot_attacker_val += values[board.piece_type_at(attacker) - 1]
                             for defender in defender_squares:
-                                tot_defender_val += values[board.piece_type_at(defender) - 1]
+                                # Check if a defender is pinned, if so, don't count it, same above
+                                if not board.is_pinned(side, defender):
+                                    tot_defender_val += values[board.piece_type_at(defender) - 1]
                             compare = tot_defender_val - tot_attacker_val
                             if compare > 0:
                                 total -= compare
     piece_comparison = total_piece_value - opposing_total
     if (piece_comparison >= 1):
         total += piece_comparison - 1
+    # If boards more than 5 moves have been made by both sides
+        # Add small bonuses for devloping bishops and knights
+    #if board.ply() > 10:
+
     # print(total_piece_value, opposing_total)
-                # TODO Check what you're currently attacking 
+                # TODO Check what you're currently attacking and promote attacking higer value pieces 
+                # Kind of already does that?
+                # While having defenders defending that square to a <= value than the attackers attacking a square
+                # Ex, a pawn moves up to attack a bishop, the bishop has no defenders but the pawn has one somewhere.
         
     return total
 

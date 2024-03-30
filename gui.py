@@ -143,3 +143,49 @@ def evaluate(pos) :
         evaluation = evaluation - 0.1*(pos.legal_moves.count() - moyenne)
 
     return evaluation
+
+
+# OUR OWN ADDED FUNCTIONS
+def get_square(pos):
+    square = ""
+    x = pos[0]
+    y = pos[1]
+    if x <= 60:
+        square += 'a'
+    elif 60 < x <= 120:
+        square += 'b'
+    elif 120 < x <= 180:
+        square += 'c'
+    elif 180 < x <= 240:
+        square += 'd'
+    elif 240 < x <= 300:
+        square += 'e'
+    elif 300 < x <= 360:
+        square += 'f'
+    elif 360 < x <= 420:
+        square += 'g'
+    elif 420 < x <= 480:
+        square += 'h'
+    else:
+        print('Click out of bounds')
+
+    if y <= 60:
+        square += '8'
+    elif 60 < y <= 120:
+        square += '7'
+    elif 120 < y <= 180:
+        square += '6'
+    elif 180 < y <= 240:
+        square += '5'
+    elif 240 < y <= 300:
+        square += '4'
+    elif 300 < y <= 360:
+        square += '3'
+    elif 360 < y <= 420:
+        square += '2'
+    elif 420 < y <= 480:
+        square += '1'
+    else:
+        print('Click out of bounds')
+    
+    return square
