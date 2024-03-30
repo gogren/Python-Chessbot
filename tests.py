@@ -3,7 +3,8 @@ import chess
 import chess.engine
 board = chess.Board()
 
-print(min(1,2))
+string = "1234"
+print(string[:2])
 
 """
         A dynamic list of legal moves.

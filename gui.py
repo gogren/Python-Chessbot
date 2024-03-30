@@ -146,6 +146,7 @@ def evaluate(pos) :
 
 
 # OUR OWN ADDED FUNCTIONS
+
 def get_square(pos):
     square = ""
     x = pos[0]
@@ -189,3 +190,10 @@ def get_square(pos):
         print('Click out of bounds')
     
     return square
+
+def check_for_promotion(board: chess.Board, move):
+    square = chess.parse_square(move[:2])
+    # Autopromote to a queen if piece is moving from 7 to 8 and is a pawn
+    if move[1] == "7" and move[3] == "8" and board.piece_type_at(square) == 1:
+        return move + "q"
+    return move

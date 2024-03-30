@@ -48,7 +48,7 @@ TODO
         # Gets all the square for all the peices types of a given color
         squares = board.pieces(chess.PieceType(i), chess.Color(side))
         opponent_squares = board.pieces(chess.PieceType(i), chess.Color(not side))
-        if i == 1:
+        if i == 1: # Could condense this using values[]
             total += len(squares) # Count pawns
             opposing_total += len(opponent_squares)
             total_piece_value += len(squares)
@@ -72,6 +72,7 @@ TODO
 
         for square in squares:
             attackers_squares = board.attackers(not side, square)
+            # Checks if a piece of lesser value is attacking the piece... COULD HAVE ISSUES HERE
             if (len(attackers_squares) > 0):
                 largest_difference = 0
                 for attacter_square in attackers_squares:
@@ -82,6 +83,8 @@ TODO
                         largest_difference = difference
                 if largest_difference > 0:
                     # Add +2 penalty to having a piece being attacked by a piece of lower value
+                    # Maybe even make throwing a piece away worse, in one case it threw away a bishop because I could promote to a queen,
+                    # which in the few moves it saw is less of a "loss" than me getting a queen even through me getting a queen was inevetible
                     total -= (largest_difference + 2)
                 # If there is at least one attacker but difference is 0, check for defenders, if less defenders than attackers, subtract values
                 # Also should check values of defenders
@@ -105,6 +108,7 @@ TODO
                             compare = tot_defender_val - tot_attacker_val
                             if compare > 0:
                                 total -= compare
+    # Reward agent for having more peices than opponent
     piece_comparison = total_piece_value - opposing_total
     if (piece_comparison >= 1):
         total += piece_comparison - 1

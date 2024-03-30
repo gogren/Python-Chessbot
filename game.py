@@ -48,6 +48,7 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                 end = input('Enter "end" to be done:')
                 if end == "end":
                     break
+                print()
             break
         if board.turn == side: # Your turn
             if not autobattle:
@@ -58,7 +59,6 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                 for move in board.legal_moves:
                     l_moves.append(move.uci())
                 print(f"Legal Moves:\n {l_moves}")
-                # Could do clicking stuff with gui here
                 while True:
                     move = ""
                     first_move = True
@@ -77,8 +77,8 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                         for event in event_list:
                             if event.type == pygame.MOUSEBUTTONDOWN:
                                 move += g.get_square(event.pos)
-                                # print(square)
                                 second_move = False   
+                    move = g.check_for_promotion(board, move)
                     print(move)
                     # Check if move is valid
                     if move in l_moves:
@@ -102,7 +102,6 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
             agents_move = agents_move_pair[0]
             print(f"Opponent chose: {agents_move.uci()}")
             print("Opponent's Position Score:", agents_move_pair[1])
-            # print("Opponent's cur pos rating", h(board, not side))
             board.push(agents_move)
             print(board)
 
@@ -134,6 +133,6 @@ if __name__ == "__main__":
     # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move, Nothing or anything)
     
     # Having a depth of 5 goes kinda hard but it takes mad long
-    play_game("White", f.abminimax, h.grants_heuristic, 4)
+    play_game("White", f.abminimax, h.grants_heuristic, 1)
 
 
