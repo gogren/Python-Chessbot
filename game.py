@@ -16,6 +16,7 @@ h2: ^^, heuristic your autobattler will use
 """
 def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None):
     board = chess.Board()
+    g.show(board.board_fen(), board)
     print(board)
     if color in "BlackblackFalsefalse":
         print("Chose Black")
@@ -33,7 +34,6 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
     if autobattle and h2 == None:
         h2 = h
     while True:
-        g.show(board.board_fen(), board)
         # Checks for checkmate, stalemate, insuffecient material, 75 move rule, and five-fold repition 
         if board.is_game_over():
             print("Game Over")
@@ -80,8 +80,8 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                                 move += g.get_square(event.pos)
                                 second_move = False  
                     # Redraw everything to remove selected squares, can't figure out how to do transparent squares
-                    g.show(board.board_fen(), board)
                     move = g.check_for_promotion(board, move)
+                    g.show(board.board_fen(), board)
                     print(move)
                     # Check if move is valid
                     if move in l_moves:
@@ -99,6 +99,7 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
             print(board)
             num_of_moves += 1
             print("Number of Moves:")
+            g.show(board.board_fen(), board)
         else: # Bot's turn
             print(f"Generating {opponent}'s next move...")
             agents_move_pair = f(board, h, depth_limit, board.turn)
@@ -106,6 +107,7 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
             print(f"Opponent chose: {agents_move.uci()}")
             print("Opponent's Position Score:", agents_move_pair[1])
             board.push(agents_move)
+            g.show(board.board_fen(), board)
             print(board)
 
 ####################################
