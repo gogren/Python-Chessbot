@@ -71,81 +71,10 @@ def show(FEN, board) :
                 rank = rank + 1
         pygame.display.update() 
 
-infinity = 1000000000
-
-def piece_list(pos) :
-    '''Renvoie la liste des pièces présentes sur l'échiquier.'''
-    piece_liste = []
-    for place in chess.SQUARES :
-        if pos.piece_at(place) != None :
-            piece_liste.append(pos.piece_at(place).symbol())
-    return piece_liste
-
-def game_is_finished(pos) :
-    '''Détermine si la partie est finie.'''
-    if pos.is_checkmate() or pos.is_stalemate() or pos.is_insufficient_material() or pos.can_claim_threefold_repetition():
-        return True
-    else :
-        return False
-
-def evaluate(pos) :
-    '''Évaluation d'une position en fonction d'une position et de la mobillité des pièces.'''
-    if pos.is_checkmate() :
-        return -infinity
-    elif game_is_finished(pos) :
-        return 0
-    piece_liste = piece_list(pos)
-    evaluation = 0
-    opponent_legal_moves = []
-    current_player_legal_moves = [move for move in pos.legal_moves]
-    for i in piece_liste :
-        if i == 'Q' :
-            evaluation = evaluation + 9
-        elif i == 'q' :
-            evaluation = evaluation - 9
-        elif i == 'R' :
-            evaluation = evaluation + 5
-        elif i == 'r' :
-            evaluation = evaluation - 5
-        elif i == 'N' :
-            evaluation = evaluation + 3
-        elif i == 'n' :
-            evaluation = evaluation - 3
-        elif i == 'B' :
-            evaluation = evaluation + 3
-        elif i == 'b' :
-            evaluation = evaluation - 3
-        elif i == 'P' :
-            evaluation = evaluation + 1
-        elif i == 'p' :
-            evaluation = evaluation - 1
-
-    for i in range(len(current_player_legal_moves)-1) :
-        pos.push_san(str(current_player_legal_moves[i]))
-        opponent_legal_moves.append(pos.legal_moves.count())
-        if pos.is_checkmate() :
-            pos.pop()
-            return infinity
-        elif game_is_finished(pos) :
-            pos.pop()
-            return 0
-        pos.pop()
-    moyenne = 0
-    for i in opponent_legal_moves :
-        moyenne = moyenne + i
-    if len(opponent_legal_moves) != 0 :
-        moyenne = moyenne / len(opponent_legal_moves)
-    #else :   a servi pour le déboggage
-        #print(moyenne)
-    if pos.turn == chess.WHITE :
-        evaluation = evaluation + 0.1*(pos.legal_moves.count() - moyenne)
-    else :
-        evaluation = evaluation - 0.1*(pos.legal_moves.count() - moyenne)
-
-    return evaluation
-
 
 # OUR OWN ADDED FUNCTIONS
+        
+YELLOW = (255, 255, 0)
 
 def get_square(pos):
     square = ""
@@ -191,9 +120,49 @@ def get_square(pos):
     
     return square
 
+# Autopromote to a queen if piece is moving from 7 to 8 and is a pawn
 def check_for_promotion(board: chess.Board, move):
     square = chess.parse_square(move[:2])
-    # Autopromote to a queen if piece is moving from 7 to 8 and is a pawn
     if move[1] == "7" and move[3] == "8" and board.piece_type_at(square) == 1:
         return move + "q"
     return move
+
+# Return coordinate value of sqaure
+def parse_square(square: str):
+    letter = square[0]
+    num = square[1]
+    y = 420 - (int(num) * 60 - 60)
+    if letter == 'a':
+        x = 0
+    elif letter == 'b':
+        x = 60
+    elif letter == 'c':
+        x = 120
+    elif letter == 'd':
+        x = 180
+    elif letter == 'e':
+        x = 240
+    elif letter == 'f':
+        x = 300
+    elif letter == 'g':
+        x = 360
+    elif letter == 'h':
+        x = 420
+    else:
+        print("Square parse error")
+        return None
+    print("Got", x, y)
+    return x, y
+
+ # Highlights the selected square and highlights the moves that square can make
+def show_selected_moves(board: chess.Board, first_click):  
+    objs = []
+    draw_at = parse_square(first_click)
+    objs.append(pygame.draw.rect(screen, YELLOW, pygame.Rect(draw_at[0], draw_at[1], 60, 60), 2))
+    for move in board.legal_moves:
+        to_uci = move.uci()
+        if to_uci[:2] == first_click:
+            draw_at = parse_square(to_uci[2:])
+            objs.append(pygame.draw.rect(screen, YELLOW, pygame.Rect(draw_at[0], draw_at[1], 60, 60), 2))
+    pygame.display.update() 
+    return objs

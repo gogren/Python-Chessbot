@@ -72,12 +72,15 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                                 first_move = False
                                 print(move)
                     # Get second click
+                    ojbs = g.show_selected_moves(board, move)
                     while second_move:
                         event_list = pygame.event.get()
                         for event in event_list:
                             if event.type == pygame.MOUSEBUTTONDOWN:
                                 move += g.get_square(event.pos)
-                                second_move = False   
+                                second_move = False  
+                    # Redraw everything to remove selected squares, can't figure out how to do transparent squares
+                    g.show(board.board_fen(), board)
                     move = g.check_for_promotion(board, move)
                     print(move)
                     # Check if move is valid
@@ -133,6 +136,6 @@ if __name__ == "__main__":
     # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move, Nothing or anything)
     
     # Having a depth of 5 goes kinda hard but it takes mad long
-    play_game("White", f.abminimax, h.grants_heuristic, 1)
+    play_game("White", f.abminimax, h.grants_heuristic, 5)
 
 
