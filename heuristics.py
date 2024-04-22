@@ -48,22 +48,10 @@ TODO
         # Gets all the square for all the peices types of a given color
         squares = board.pieces(chess.PieceType(i), chess.Color(side))
         opponent_squares = board.pieces(chess.PieceType(i), chess.Color(not side))
-        if i == 1: # Could condense this using values[]
-            total += len(squares) # Count pawns
-            opposing_total += len(opponent_squares)
-            total_piece_value += len(squares)
-        elif i == 2 or i == 3:
-            total += len(squares) * 3 # Count bishops / knights
-            total_piece_value += len(squares) * 3
-            opposing_total += len(opponent_squares) * 3
-        elif i == 4:
-            total += len(squares) * 5 # Count Rooks
-            total_piece_value += len(squares) * 5
-            opposing_total += len(opponent_squares) * 5
-        elif i == 5:
-            total += len(squares) * 9 # Count queens
-            total_piece_value += len(squares) * 9
-            opposing_total += len(opponent_squares) * 9
+        cur_piece_value = len(squares) * values[i-1]
+        total+= cur_piece_value
+        total_piece_value += cur_piece_value
+        opposing_total += len(opponent_squares) * values[i-1]
         # Don't need to count king
 
         # Check if any opposing peices attack a square, if so
@@ -108,10 +96,10 @@ TODO
                             compare = tot_defender_val - tot_attacker_val
                             if compare > 0:
                                 total -= compare
-    # Reward agent for having more peices than opponent
+    # Reward agent for having more peices than opponent, (-1 to not promote constantly trading pawns)?
     piece_comparison = total_piece_value - opposing_total
     if (piece_comparison >= 1):
-        total += piece_comparison - 1
+        total += piece_comparison
     # If boards more than 5 moves have been made by both sides
         # Add small bonuses for devloping bishops and knights
     #if board.ply() > 10:
@@ -126,3 +114,43 @@ TODO
 
 
 # Could make some mid heuristics for science
+
+def piece_value_difference_only(board: chess.Board, side):
+    if board.is_game_over():
+        # if board.is_checkmate():
+            if board.outcome().winner == side:
+                return 1000
+            # Stalemate included (None)
+            else:
+                return -1000
+    values = [1, 3, 3, 5, 9, 0]
+    total = 0
+    opposing_total = 0
+    for i in range(1, 6):
+        squares = board.pieces(chess.PieceType(i), chess.Color(side))
+        cur_piece_value = len(squares) * values[i-1]
+        total+= cur_piece_value
+        opponent_squares = board.pieces(chess.PieceType(i), chess.Color(not side))
+        opposing_total += len(opponent_squares) * values[i-1]
+    difference = total - opposing_total
+    return difference
+
+
+# Should play defensively since it only looks at maintaining own pieces
+def piece_value_only(board: chess.Board, side):
+    if board.is_game_over():
+        # if board.is_checkmate():
+            if board.outcome().winner == side:
+                return 1000
+            # Stalemate included (None)
+            else:
+                return -1000
+    values = [1, 3, 3, 5, 9, 0]
+    total = 0
+    for i in range (1, 6):
+        squares = board.pieces(chess.PieceType(i), chess.Color(side))
+        cur_piece_value = len(squares) * values[i-1]
+        total+= cur_piece_value
+    return total
+        
+    

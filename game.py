@@ -1,20 +1,24 @@
 import random
+import time
+from typing import List
 import pygame
 import chess
 import heuristics as h
 import searches as f
 import gui as g
+import chess.polyglot
 
 pygame.init()
 """
 color: "Black" or "White"
 f: search function opponent will use
 h: heuristic function
+bin: Opening lookup table youre bot will use, input "" if you don't want to use one.
 autobattle (Auto to false): True / False
 f2: Only if autobattle is True, seach function you're autobattler will use
 h2: ^^, heuristic your autobattler will use
 """
-def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None):
+def play_game(color, f, h, depth_limit, bin,  autobattle = False, f2 = None, h2 = None):
     board = chess.Board()
     g.show(board.board_fen(), board)
     print(board)
@@ -45,12 +49,13 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
             elif board.outcome().winner == True:
                 print("White Wins")
             while True:
-                end = input('Enter "end" to be done:')
+                end = input('Enter "end" to be done: ')
                 if end == "end":
                     break
                 print()
             break
         if board.turn == side: # Your turn
+            pickedBookMove = False
             if not autobattle:
                 print("Your Turn!")
                 val = h(board, side)
@@ -90,23 +95,51 @@ def play_game(color, f, h, depth_limit, autobattle = False, f2 = None, h2 = None
                         print("Illegal move, try again.")
             else: # Autobattle with chosen heuristic until game over
                 print(f"Generating {you}'s next move...")
-                move_pair = f2(board, h2, depth_limit, board.turn)
-                move = move_pair[0]
-                print('Your side chose', move.uci())
-                print("Your Position Score:", move_pair[1])
-            uci_move = chess.Move.from_uci(str(move))
-            board.push(uci_move)
+                binMoves = []
+                with chess.polyglot.open_reader(f"polyglot-collection/{bin}") as reader:
+                    for entry in reader.find_all(board):
+                        binMoves.append(entry)
+                        # print(entry.move, entry.weight, entry.learn)
+                if len(binMoves) > 0:
+                    print("Chose move from opening database")
+                    time.sleep(1)
+                    # Pick a random move from list of book moves MAYBE PICK WEIGHTED MOVE
+                    rand_move = pick_weighted_move(binMoves)
+                    print(f"Chose {rand_move} from book moves")
+                    board.push(rand_move) 
+                    pickedBookMove = True 
+                else:  
+                    move_pair = f2(board, h2, depth_limit, board.turn)
+                    move = move_pair[0]
+                    print('Your side chose', move.uci())
+                    print("Your Position Score:", move_pair[1])
+            if (not pickedBookMove):
+                uci_move = chess.Move.from_uci(str(move))
+                board.push(uci_move)
             print(board)
             num_of_moves += 1
             print("Number of Moves:")
             g.show(board.board_fen(), board)
         else: # Bot's turn
+            binMoves = []
             print(f"Generating {opponent}'s next move...")
-            agents_move_pair = f(board, h, depth_limit, board.turn)
-            agents_move = agents_move_pair[0]
-            print(f"Opponent chose: {agents_move.uci()}")
-            print("Opponent's Position Score:", agents_move_pair[1])
-            board.push(agents_move)
+            with chess.polyglot.open_reader(f"polyglot-collection/{bin}") as reader:
+                for entry in reader.find_all(board):
+                    binMoves.append(entry)
+                    # print(entry.move, entry.weight, entry.learn)
+            if len(binMoves) > 0:
+                print("Chose move from opening database")
+                time.sleep(1)
+                # Pick a random move from list of book moves MAYBE PICK WEIGHTED MOVE
+                rand_move = pick_weighted_move(binMoves)
+                print(f"Chose {rand_move} from book moves")
+                board.push(rand_move)
+            else:
+                agents_move_pair = f(board, h, depth_limit, board.turn)
+                agents_move = agents_move_pair[0]
+                print(f"Opponent chose: {agents_move.uci()}")
+                print("Opponent's Position Score:", agents_move_pair[1])
+                board.push(agents_move)
             g.show(board.board_fen(), board)
             print(board)
 
@@ -120,6 +153,19 @@ def print_legal_moves(board):
     for move in board.legal_moves:
         moves.append(move.uci())
     print(moves)
+
+# Pick a move semi randomly
+def pick_weighted_move(entryList: List[chess.polyglot.Entry]):
+    print(entryList)
+    total = sum(entry.weight for entry in entryList)
+    cumulative_probabilities = [entry.weight / total for entry in entryList]
+    
+    random_value = random.random()
+    cumulative_probability_sum = 0
+    for i, entry in enumerate(entryList):
+        cumulative_probability_sum += cumulative_probabilities[i]
+        if random_value <= cumulative_probability_sum:
+            return entry.move
 
 
 
@@ -136,8 +182,12 @@ if __name__ == "__main__":
     # Optionally, f.random_legal_move is used here for the user's side's search, also a heuristic can also be added for user searching. 
 
     # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move, Nothing or anything)
-    
     # Having a depth of 5 goes kinda hard but it takes mad long
-    play_game("White", f.abminimax, h.grants_heuristic, 5)
+    play_game("White", f.abminimax, h.grants_heuristic, 4, "Book.bin", True)
 
+# Stuff about the opening bins:
+# Human.bin - agressive/fun - Nah this one is dumb asf it be puhing it's king and shit
+# Titans.bin - Flavio Martin's games - Not too bad
+# Book.bin - seem's pretty good idrk
+# There's too many idk
 

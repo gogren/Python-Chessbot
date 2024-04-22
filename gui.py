@@ -71,9 +71,9 @@ def show(FEN, board) :
                 rank = rank + 1
         pygame.display.update() 
 
-
-# OUR OWN ADDED FUNCTIONS
-        
+###########################
+# OUR OWN ADDED FUNCTIONS #
+###########################       
 YELLOW = (255, 255, 0)
 
 def get_square(pos):

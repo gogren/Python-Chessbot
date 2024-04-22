@@ -10,3 +10,7 @@ https://commons.wikimedia.org/wiki/Category:PNG_chess_pieces/Standard_transparen
 
 GUI from:
 https://stackoverflow.com/questions/68057562/where-do-i-start-with-a-chess-game-made-in-pythonwith-a-gui 
+
+
+Chess openings bin:
+https://chess.stackexchange.com/questions/35448/looking-for-polyglot-opening-books
