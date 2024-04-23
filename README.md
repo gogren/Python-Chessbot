@@ -14,3 +14,6 @@ https://stackoverflow.com/questions/68057562/where-do-i-start-with-a-chess-game-
 
 Chess openings bin:
 https://chess.stackexchange.com/questions/35448/looking-for-polyglot-opening-books
+
+Piece Square tables:
+https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function
