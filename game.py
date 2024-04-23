@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move, Nothing or anything)
     # Having a depth of 5 goes kinda hard but it takes mad long
-    play_game("White", f.abminimax, h.piece_sqaure_eval, 4, "Book.bin", True)
+    play_game("Black", f.abminimax, h.piece_sqaure_eval, 4, "Book.bin")
 
 # Stuff about the opening bins:
 # Human.bin - agressive/fun - Nah this one is dumb asf it be puhing it's king and shit

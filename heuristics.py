@@ -393,9 +393,9 @@ def piece_sqaure_eval(board: chess.Board, side) :
             squares = board.pieces(chess.PieceType(i), chess.Color(side))
             for square in squares:
                 if side:
-                    total += WHITE_MG_TABLES[i-1][square]
+                    total += WHITE_MG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)]
                 else:
-                    total += BLACK_MG_TABLES[i-1][square]
+                    total += BLACK_MG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)]
             cur_piece_value = len(squares) * MG_VALUES[i-1]
             total += cur_piece_value
             opponent_squares = board.pieces(chess.PieceType(i), chess.Color(not side))
@@ -405,9 +405,9 @@ def piece_sqaure_eval(board: chess.Board, side) :
             squares = board.pieces(chess.PieceType(i), chess.Color(side))
             for square in squares:
                 if side:
-                    total += WHITE_EG_TABLES[i-1][square]
+                    total += WHITE_EG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)]
                 else:
-                    total += BLACK_EG_TABLES[i-1][square]
+                    total += BLACK_EG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)]
             cur_piece_value = len(squares) * EG_VALUES[i-1]
             total += cur_piece_value
             opponent_squares = board.pieces(chess.PieceType(i), chess.Color(not side))
