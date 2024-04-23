@@ -35,10 +35,10 @@ TODO
     if board.is_game_over():
         # if board.is_checkmate():
             if board.outcome().winner == side:
-                return 1000
+                return 100000
             # Stalemate included (None)
             else:
-                return -1000
+                return -100000
     # Larger total is better
     total = 0
     opposing_total = 0
@@ -119,10 +119,10 @@ def piece_value_difference_only(board: chess.Board, side):
     if board.is_game_over():
         # if board.is_checkmate():
             if board.outcome().winner == side:
-                return 1000
+                return 100000
             # Stalemate included (None)
             else:
-                return -1000
+                return -100000
     values = [1, 3, 3, 5, 9, 0]
     total = 0
     opposing_total = 0
@@ -141,10 +141,10 @@ def piece_value_only(board: chess.Board, side):
     if board.is_game_over():
         # if board.is_checkmate():
             if board.outcome().winner == side:
-                return 1000
+                return 100000
             # Stalemate included (None)
             else:
-                return -1000
+                return -100000
     values = [1, 3, 3, 5, 9, 0]
     total = 0
     for i in range (1, 6):
@@ -364,15 +364,18 @@ BLACK_EG_TABLES = [
     BLACK_EG_QUEEN,
     BLACK_EG_KING
 ]
+# Instead of subtracting opponent's piece values, could subtract a sub eval of opponents position
+# Ie: total -= piece_sqaure_subeval(board, not side) where each eval only goes through the value's of their own side
+# Could lead to making moves that worsens your opponents position
 
 def piece_sqaure_eval(board: chess.Board, side) :
     if board.is_game_over():
         # if board.is_checkmate():
             if board.outcome().winner == side:
-                return 100000
+                return 100000 - board.fullmove_number * 2
             # Stalemate included (None)
             else:
-                return -100000
+                return -100000 + board.fullmove_number * 2
     
     # Determine if it's endgame or not 
     # (well just say if 18 points of material have been taken by either side)
@@ -387,7 +390,8 @@ def piece_sqaure_eval(board: chess.Board, side) :
         opposing_total -= len(opponent_squares) * BASIC_VALUES[i-1]
     if my_total >= 18 or opposing_total >= 18:
         endgame = True
-    total = 0
+    total = 1000 # Try to keep it from going negative
+    total -= board.fullmove_number
     if not endgame: # Still in mid game
         for i in range(1, 7):
             squares = board.pieces(chess.PieceType(i), chess.Color(side))

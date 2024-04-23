@@ -183,11 +183,12 @@ if __name__ == "__main__":
 
     # play_game("Black", f.minimax, h.grants_heuristic, 3, True, f.random_legal_move, Nothing or anything)
     # Having a depth of 5 goes kinda hard but it takes mad long
-    play_game("Black", f.abminimax, h.piece_sqaure_eval, 4, "Book.bin")
+    play_game("Black", f.abminimax, h.piece_sqaure_eval, 4, "codekiddy.bin")
 
 # Stuff about the opening bins:
 # Human.bin - agressive/fun - Nah this one is dumb asf it be puhing it's king and shit
 # Titans.bin - Flavio Martin's games - Not too bad
 # Book.bin - seem's pretty good idrk
+# codekiddy.bin - largest one I think, seems good. 
 # There's too many idk
 

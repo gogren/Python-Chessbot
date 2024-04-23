@@ -32,6 +32,7 @@ print("Black's total", opposing_total)
 idx = 56
 print("Conversion", (7  -  idx // 8) * 8 + (idx % 8))
 
+
 """
         A dynamic list of legal moves.
 

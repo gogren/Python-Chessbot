@@ -13,18 +13,24 @@ def random_legal_move(board: chess.Board, h, depth_limit, search_color):
     return (chosen_move, 0)
 
 def minimax(board: chess.Board, h, depth_limit, search_color):
-     if depth_limit == 0 or board.is_game_over():
-          print("Bad depth limit / Game is over")
-          return None
-     legal_moves = board.legal_moves     
-     max_eval = ["", -math.inf]
-     for move in legal_moves:
+    if depth_limit == 0 or board.is_game_over():
+        print("Bad depth limit / Game is over")
+        return None
+    legal_moves = board.legal_moves
+    legal_moves_iter = iter(legal_moves)
+    max_eval = [chess.Move.from_uci(str(next(legal_moves_iter))), -math.inf]
+    for move in legal_moves:
         # Maximize here
         board.push(chess.Move.from_uci(str(move)))
-        eval = minimax_help(board, h, depth_limit - 1, search_color)            
-        board.pop()
-        max_eval = find_max_pair([max_eval, [chess.Move.from_uci(str(move)), eval]])
-     return max_eval
+        if board.can_claim_threefold_repetition():
+            board.pop()
+            continue
+        else:
+            eval = minimax_help(board, h, depth_limit - 1, search_color)
+            board.pop()
+            max_eval = find_max_pair([max_eval, [chess.Move.from_uci(str(move)), eval]])
+    return max_eval
+
 
 def minimax_help(board: chess.Board, h, depth_limit, search_color):
     if depth_limit == 0 or board.is_game_over():
@@ -49,18 +55,53 @@ def minimax_help(board: chess.Board, h, depth_limit, search_color):
     
     
 def abminimax(board: chess.Board, h, depth_limit, search_color):
-     if depth_limit == 0 or board.is_game_over():
-          print("Bad depth limit / Game is over")
-          return None
-     legal_moves = board.legal_moves     
-     max_eval = ["", -math.inf]
-     for move in legal_moves:
+    if depth_limit == 0 or board.is_game_over():
+        print("Bad depth limit / Game is over")
+        return None
+    legal_moves = board.legal_moves     
+    legal_moves_iter = iter(legal_moves)
+    max_eval = [chess.Move.from_uci(str(next(legal_moves_iter))), -math.inf]
+    for move in legal_moves:
         # Maximize here
         board.push(chess.Move.from_uci(str(move)))
-        eval = abminimax_help(board, h, depth_limit - 1, search_color, -math.inf, math.inf)            
-        board.pop()
-        max_eval = find_max_pair([max_eval, [chess.Move.from_uci(str(move)), eval]])
-     return max_eval
+        if board.can_claim_threefold_repetition():
+            board.pop()
+            continue
+        else:
+            eval = abminimax_help(board, h, depth_limit - 1, search_color, -math.inf, math.inf)            
+            board.pop()
+            max_eval = find_max_pair([max_eval, [chess.Move.from_uci(str(move)), eval]])
+    return max_eval
+
+# Found a better way to help endgames, could still be better though, just slow af
+def abminimax_endgamehelp(board: chess.Board, h, depth_limit, search_color):
+    if depth_limit == 0 or board.is_game_over():
+        print("Bad depth limit / Game is over")
+        return None
+    values = [1, 3, 3, 5, 9, 0]
+    total = 0
+    for i in range (1, 6):
+        squares = board.pieces(chess.PieceType(i), chess.Color(board.turn))
+        cur_piece_value = len(squares) * values[i-1]
+        total+= cur_piece_value
+    # If you have less pieces look harder idk it sucks at checkmating with few pieces. 
+    if total <= 12:
+         depth_limit += 1
+    legal_moves = board.legal_moves     
+    legal_moves_iter = iter(legal_moves)
+    max_eval = [chess.Move.from_uci(str(next(legal_moves_iter))), -math.inf]
+
+    for move in legal_moves:
+        # Maximize here
+        board.push(chess.Move.from_uci(str(move)))
+        if board.can_claim_threefold_repetition():
+            board.pop()
+            continue
+        else:
+            eval = abminimax_help(board, h, depth_limit - 1, search_color, -math.inf, math.inf)            
+            board.pop()
+            max_eval = find_max_pair([max_eval, [chess.Move.from_uci(str(move)), eval]])
+    return max_eval
 
 # Might do this with regular minimax too
 def abminimax_help(board: chess.Board, h, depth_limit, search_color, alpha, beta):
@@ -71,12 +112,16 @@ def abminimax_help(board: chess.Board, h, depth_limit, search_color, alpha, beta
             max_eval = -math.inf
             for move in legal_moves:
                 board.push(chess.Move.from_uci(str(move)))
-                eval = abminimax_help(board, h, depth_limit - 1, search_color, alpha, beta)
-                board.pop()
-                max_eval = max(max_eval, eval)
-                alpha = max(alpha, eval)
-                if beta <= alpha or alpha == 1000: # If checkmate found TEST THIS
-                     break
+                if board.can_claim_threefold_repetition():
+                    board.pop()
+                    continue
+                else:
+                    eval = abminimax_help(board, h, depth_limit - 1, search_color, alpha, beta)
+                    board.pop()
+                    max_eval = max(max_eval, eval)
+                    alpha = max(alpha, eval)
+                    if beta <= alpha or alpha == 1000: # If checkmate found TEST THIS
+                        break
             return max_eval
     else: # Find worst move for color
             min_eval = math.inf
@@ -89,6 +134,24 @@ def abminimax_help(board: chess.Board, h, depth_limit, search_color, alpha, beta
                 if beta <= alpha or beta == -1000: # If loss/stalemate found TEST THIS
                      break
             return min_eval   
+
+def negamax(board: chess.Board, h, depth_limit, search_color):
+    if depth_limit == 0 or board.is_game_over():
+        print("Bad depth limit / Game is over")
+        return None
+    legal_moves = board.legal_moves     
+    max_eval = ["", -math.inf]
+    for move in legal_moves:
+        # Maximize here
+        board.push(chess.Move.from_uci(str(move)))
+        eval = negamax_help(board, h, depth_limit - 1, search_color, -math.inf, math.inf)            
+        board.pop()
+        max_eval = find_max_pair([max_eval, [chess.Move.from_uci(str(move)), eval]])
+    return max_eval
+
+def negamax_help(board: chess.Board, h, depth_limit, search_color, alpha, beta):
+    
+    return 
 
 
 ### HELPER FUNCTIONS ###
