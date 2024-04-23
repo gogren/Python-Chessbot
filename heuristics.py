@@ -416,7 +416,78 @@ def piece_sqaure_eval(board: chess.Board, side) :
             total += cur_piece_value
             opponent_squares = board.pieces(chess.PieceType(i), chess.Color(not side))
             total -= len(opponent_squares) * EG_VALUES[i-1] 
-             
+
+    return total
+
+def piece_sqaure_double_eval(board: chess.Board, side) :
+    if board.is_game_over():
+        # if board.is_checkmate():
+            if board.outcome().winner == side:
+                return 100000 - board.fullmove_number * 2
+            # Stalemate included (None)
+            else:
+                return -100000 + board.fullmove_number * 2
+    
+    # Determine if it's endgame or not 
+    # (well just say if 18 points of material have been taken by either side)
+    my_total = 39
+    opposing_total = 39
+    endgame = False
+    for i in range(1, 6):
+        squares = board.pieces(chess.PieceType(i), chess.Color(side))
+        cur_piece_value = len(squares) * BASIC_VALUES[i-1]
+        my_total -= cur_piece_value
+        opponent_squares = board.pieces(chess.PieceType(i), chess.Color(not side))
+        opposing_total -= len(opponent_squares) * BASIC_VALUES[i-1]
+    if my_total >= 18 or opposing_total >= 18:
+        endgame = True
+    total = 1000 # Try to keep it from going negative
+    total -= board.fullmove_number
+    if not endgame: # Still in mid game
+        for i in range(1, 7):
+            squares = board.pieces(chess.PieceType(i), chess.Color(side))
+            for square in squares:
+                if side:
+                    total += WHITE_MG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)]
+                else:
+                    total += BLACK_MG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)]
+            cur_piece_value = len(squares) * MG_VALUES[i-1]
+            total += cur_piece_value
+    else: # In endgame
+        for i in range(1, 7):
+            squares = board.pieces(chess.PieceType(i), chess.Color(side))
+            for square in squares:
+                if side:
+                    total += WHITE_EG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)]
+                else:
+                    total += BLACK_EG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)]
+            cur_piece_value = len(squares) * EG_VALUES[i-1]
+            total += cur_piece_value
+    total -= piece_square_sub_eval(board, not side, endgame)         
+    return total
+
+def piece_square_sub_eval(board: chess.Board, side, endgame):
+    total = 0
+    if not endgame: # Still in mid game
+        for i in range(1, 7):
+            squares = board.pieces(chess.PieceType(i), chess.Color(side))
+            for square in squares:
+                if side:
+                    total += WHITE_MG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)] // 3
+                else:
+                    total += BLACK_MG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)] // 3
+            cur_piece_value = len(squares) * MG_VALUES[i-1]
+            total += cur_piece_value
+    else: # In endgame
+        for i in range(1, 7):
+            squares = board.pieces(chess.PieceType(i), chess.Color(side))
+            for square in squares:
+                if side:
+                    total += WHITE_EG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)] // 3
+                else:
+                    total += BLACK_EG_TABLES[i-1][(7  -  square // 8) * 8 + (square % 8)] // 3
+            cur_piece_value = len(squares) * EG_VALUES[i-1]
+            total += cur_piece_value
     return total
 
 def main():
