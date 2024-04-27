@@ -120,7 +120,7 @@ def abminimax_help(board: chess.Board, h, depth_limit, search_color, alpha, beta
                     board.pop()
                     max_eval = max(max_eval, eval)
                     alpha = max(alpha, eval)
-                    if beta <= alpha or alpha == 1000: # If checkmate found TEST THIS
+                    if beta <= alpha: # or alpha >= 90000: # If checkmate found TEST THIS Dont work bc there are better/worse checkmates
                         break
             return max_eval
     else: # Find worst move for color
@@ -131,7 +131,7 @@ def abminimax_help(board: chess.Board, h, depth_limit, search_color, alpha, beta
                 board.pop()
                 min_eval = min(min_eval, eval)
                 beta = min(beta, eval)
-                if beta <= alpha or beta == -1000: # If loss/stalemate found TEST THIS
+                if beta <= alpha: # or beta <= -90000: # If loss/stalemate found TEST THIS
                      break
             return min_eval   
 
