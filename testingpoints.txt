@@ -1,0 +1,38 @@
+Things I Noticed / Can test for:
+
+Defining on when endgame starts and how chainging it effects things,
+(queens are gone / one player only has X total value of pieces left, etc )
+
+Adding search depth based off how many total pieces are left
+
+Timing differenes between with and without pruning
+
+How much piece square tables help
+
+How much opening lookup tables help
+
+How much evalutating your oppoenent position matters
+(more:)
+( I found that using the same evalutaion on position causes agent to sacrifice peices for the 
+sake of a worse postion for the oppoenent, so I "watered down" their positoin eval a bit )
+
+How checking for three_fold_repition helps with time
+(It supposedly takes decent time, but if checking that prunes away enough braches it could be beneficial )
+( -Found that checking at the top level only is beneficial, and that checking at each level takes too long, but checking at the top
+is beneficial for both positioning and for time)
+
+How penaltizing checkmates that take longer helped 
+(more:)
+(it would always pick the first checkmate path it saw, so If it saw a checkmate in 3 moves, it pick that, then on it's next turn 
+it could find a new way to check mate in three moves again, then on it's next turn same thing find a new way to checkmate in 3, thus entering a 
+infinite loop and never checkmating)
+
+Using the wierd ass value tables instead of usual [1, 3, 3, 5, 9, 0]
+
+Using an endgame table in addition to a midgame table
+
+
+
+
+
+

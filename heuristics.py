@@ -35,10 +35,10 @@ TODO
     if board.is_game_over():
         # if board.is_checkmate():
             if board.outcome().winner == side:
-                return 100000
+                return 100000 - board.fullmove_number * 2
             # Stalemate included (None)
             else:
-                return -100000
+                return -100000 + board.fullmove_number * 2
     # Larger total is better
     total = 0
     opposing_total = 0
@@ -119,10 +119,10 @@ def piece_value_difference_only(board: chess.Board, side):
     if board.is_game_over():
         # if board.is_checkmate():
             if board.outcome().winner == side:
-                return 100000
+                return 100000 - board.fullmove_number * 2
             # Stalemate included (None)
             else:
-                return -100000
+                return -100000 + board.fullmove_number * 2
     values = [1, 3, 3, 5, 9, 0]
     total = 0
     opposing_total = 0
@@ -141,10 +141,10 @@ def piece_value_only(board: chess.Board, side):
     if board.is_game_over():
         # if board.is_checkmate():
             if board.outcome().winner == side:
-                return 100000
+                return 100000 - board.fullmove_number * 2
             # Stalemate included (None)
             else:
-                return -100000
+                return -100000 + board.fullmove_number * 2
     values = [1, 3, 3, 5, 9, 0]
     total = 0
     for i in range (1, 6):
@@ -391,7 +391,7 @@ def piece_sqaure_eval(board: chess.Board, side) :
     if my_total >= 18 or opposing_total >= 18:
         endgame = True
     total = 1000 # Try to keep it from going negative
-    total -= board.fullmove_number
+    total -= board.fullmove_number * 4
     if not endgame: # Still in mid game
         for i in range(1, 7):
             squares = board.pieces(chess.PieceType(i), chess.Color(side))
@@ -442,7 +442,7 @@ def piece_sqaure_double_eval(board: chess.Board, side) :
     if my_total >= 18 or opposing_total >= 18:
         endgame = True
     total = 1000 # Try to keep it from going negative
-    total -= board.fullmove_number
+    total -= board.fullmove_number * 4 # Punish prolonging moves, don't think this matters...
     if not endgame: # Still in mid game
         for i in range(1, 7):
             squares = board.pieces(chess.PieceType(i), chess.Color(side))
